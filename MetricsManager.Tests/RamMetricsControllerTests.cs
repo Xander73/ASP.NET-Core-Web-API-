@@ -7,36 +7,37 @@ using Microsoft.Extensions.Logging;
 using MetricsManager.DAL;
 using MetricsManager.Models;
 using System.Collections.Generic;
+using AutoMapper;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class RamMetricsControllerTests
     {
         private RamMetricsController controller;
         private Mock<ILogger<RamMetricsController>> mock;
         private Mock<IRamMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public RamMetricsControllerTests()
         {
             mock = new Mock<ILogger<RamMetricsController>>();
             repositoryMock = new Mock<IRamMetricsRepository>();
-            controller = new RamMetricsController(mock.Object, repositoryMock.Object);
+            mapperMock = new Mock<IMapper>();
+            controller = new RamMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
         public void GetRamMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
+            var toTime = "100";
 
             repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
                 .Returns(new List<RamMetric> { new RamMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-            var result = controller.GetRamMetricsByTimePeriod(agentId, fromTime, toTime);
+            var result = controller.GetRamMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

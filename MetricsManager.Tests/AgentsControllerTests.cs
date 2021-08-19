@@ -6,7 +6,7 @@ using MetricsManager.Core;
 using Moq;
 using Microsoft.Extensions.Logging;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class AgentsControllerTests
     {

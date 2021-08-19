@@ -7,36 +7,37 @@ using Moq;
 using MetricsManager.DAL;
 using MetricsManager.Models;
 using System.Collections.Generic;
+using AutoMapper;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class HddMetricsControllerTests
     {
         private HddMetricsController controller;
         private Mock<ILogger<HddMetricsController>> mock;
         private Mock<IHddMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public HddMetricsControllerTests ()
         {
             mock = new Mock<ILogger<HddMetricsController>>();
             repositoryMock = new Mock<IHddMetricsRepository>();
-            controller = new HddMetricsController(mock.Object, repositoryMock.Object);
+            mapperMock = new Mock<IMapper>();
+            controller = new HddMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
         public void GetHddMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
+            var toTime = "100";
 
             repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
                 .Returns(new List<HddMetric> { new HddMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-            var result = controller.GetHddMetricsByTimePeriod(agentId, fromTime, toTime);
+            var result = controller.GetHddMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

@@ -7,36 +7,37 @@ using Microsoft.Extensions.Logging;
 using MetricsManager.DAL;
 using MetricsManager.Models;
 using System.Collections.Generic;
+using AutoMapper;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class DotNetMetricsControllerTests
     {
         private DotNetMetricsController controller;
         private Mock<ILogger<DotNetMetricsController>> mock;
         private Mock<IDotNetMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public DotNetMetricsControllerTests ()
         {
             mock = new Mock<ILogger<DotNetMetricsController>>();
             repositoryMock = new Mock<IDotNetMetricsRepository>();
-            controller = new DotNetMetricsController(mock.Object, repositoryMock.Object);
+            mapperMock = new Mock<IMapper>();
+            controller = new DotNetMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
         public void GetDotNetMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
+            var toTime = "100";
 
             repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
                 .Returns(new List<DotNetMetric> { new DotNetMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-            var result = controller.GetDotNetMetricsByTimePeriod(agentId, fromTime, toTime);
+            var result = controller.GetDotNetMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

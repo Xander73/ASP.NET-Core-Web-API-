@@ -7,36 +7,37 @@ using Moq;
 using MetricsManager.DAL;
 using MetricsManager.Models;
 using System.Collections.Generic;
+using AutoMapper;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class NetworkMetricsControllerTests
     {
         private NetworkMetricsController controller;
         private Mock<ILogger<NetworkMetricsController>> mock;
         private Mock<INetworkMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public NetworkMetricsControllerTests()
         {
             mock = new Mock<ILogger<NetworkMetricsController>>();
             repositoryMock = new Mock<INetworkMetricsRepository>();
-            controller = new NetworkMetricsController(mock.Object, repositoryMock.Object);
+            mapperMock = new Mock<IMapper>();
+            controller = new NetworkMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
         public void GetNetworkMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
+            var toTime = "100";
 
             repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
                 .Returns(new List<NetworkMetric> { new NetworkMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-            var result = controller.GetNetworkMetricsByTimePeriod(agentId, fromTime, toTime);
+            var result = controller.GetNetworkMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

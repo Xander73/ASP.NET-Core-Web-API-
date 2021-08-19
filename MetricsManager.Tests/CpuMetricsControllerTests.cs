@@ -7,23 +7,24 @@ using Microsoft.Extensions.Logging;
 using MetricsManager.DAL;
 using MetricsManager.Models;
 using System.Collections.Generic;
+using AutoMapper;
 
-namespace Lesson2.Tests
+namespace MetricsManager.Tests
 {
     public class CpuMetricsControllerTests
     {
         private CpuMetricsController controller;
         private Mock<ILogger<CpuMetricsController>> mock;
         private Mock<ICpuMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
 
         public CpuMetricsControllerTests ()
         {
             mock = new Mock<ILogger<CpuMetricsController>>();
-
             repositoryMock = new Mock<ICpuMetricsRepository>();
-
-            controller = new CpuMetricsController(mock.Object, repositoryMock.Object);
+            mapperMock = new Mock<IMapper>();
+            controller = new CpuMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
 
         }
 
@@ -31,17 +32,15 @@ namespace Lesson2.Tests
         [Fact]
         public void GetMetricsFromAgent_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
+            var toTime = "100";
 
             repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
                 .Returns(new List<CpuMetric> { new CpuMetric { Id =1, AgentId = 1, Time = 1, Value = 1 } });
 
 
-            var result = controller.GetCpuMetricsByTimePeriod(agentId, fromTime, toTime);
+            var result = controller.GetCpuMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);
