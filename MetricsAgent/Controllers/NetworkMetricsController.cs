@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/network")]
+    [Route("api/networkmetrics")]
     [ApiController]
     public class NetworkMetricsController : ControllerBase
     {
@@ -32,54 +32,14 @@ namespace MetricsAgent.Controllers
         }
 
 
-        [HttpGet("metricsController/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
+        [HttpGet("from/{fromParameter}/to/{toParameter}")]
+        public IActionResult GetByTimePeriod([FromRoute] string fromParameter, [FromRoute] string toParameter)
         {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetMetrics с аргументами {fromTime} и {toTime}.");
-            return Ok();
-        }
+            _logger.LogDebug($"Запущен метод NetworkMetricsController.GetByTimePeriod с параметрами {fromParameter} и {toParameter}");
+            //обратно привожу строки к double
+            TimeSpan fromTime = TimeSpan.FromSeconds(Convert.ToDouble(fromParameter));
+            TimeSpan toTime = TimeSpan.FromSeconds(Convert.ToDouble(toParameter));
 
-
-        [HttpPost("create")]
-        public IActionResult Create([FromBody] NetworkMetricCreateRequest request)
-        {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.Create с аргументом {request}.");
-            _repository.Create(new NetworkMetric
-            {
-                Time = request.Time,
-                Value = request.Value
-            });
-
-            return Ok();
-        }
-
-
-        [HttpGet("all")]
-        public IActionResult GetAll()
-        {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetAll без аргументов.");
-            var metrics = _repository.GetAll();
-
-            var response = new AllNetworkMetricsResponse()
-            {
-                Metrics = new List<NetworkMetricDto>()
-            };
-
-            if (metrics != null)
-            {
-                foreach (var metric in metrics)
-                {
-                    response.Metrics.Add(_mapper.Map<NetworkMetricDto>(metric));
-                }
-            }
-            return Ok(response);
-        }
-
-
-        [HttpGet("period")]
-        public IActionResult GetByTimePeriod(TimeSpan fromTime, TimeSpan toTime)
-        {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetByTimePeriod с аргументами {fromTime} и {toTime}.");
             var metrics = _repository.GetByTimePeriod(fromTime, toTime);
 
             var response = new AllNetworkMetricsResponse()
@@ -94,7 +54,10 @@ namespace MetricsAgent.Controllers
                     response.Metrics.Add(_mapper.Map<NetworkMetricDto>(metric));
                 }
             }
+
             return Ok(response);
         }
+
+
     }
 }

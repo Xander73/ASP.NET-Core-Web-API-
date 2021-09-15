@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MetricsAgent.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -9,83 +10,48 @@ namespace MetricsAgent.DAL
 {
     public class RamMetricsRepository : IRamMetricsRepository
     {
-        private const string ConnectionString = "DataSource=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
+        private string _connectionString = "DataSource=metrics.db;Version=3;Pooling=true;Max Pool Size=100;";
 
-        public RamMetricsRepository()
+        public RamMetricsRepository(IConfiguration configuration)
         {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
             SqlMapper.AddTypeHandler(new TimeSpanHandler());
         }
 
 
         public void Create(RamMetric item)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            if (_connectionString != null)
             {
-                connection.Execute("INSERT INTO rammetrics (value, time) VALUES (@value, @time)",
-                    new
-                    {
-                        value = item.Value,
-                        time = item.Time.TotalSeconds
-                    });
-            };
-        }
-
-
-        public void Delete(int id)
-        {
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                connection.Execute("DELETE FROM rammetrics WHERE id=@id",
-                    new { id = id });
-            }
-        }
-
-
-        public void Update(RamMetric item)
-        {
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                connection.Execute("UPDATE rammetrics SET value = @value, time = @time WHERE id=@id",
-                    new
-                    {
-                        value = item.Value,
-                        time = item.Time.TotalSeconds,
-                        id = item.Id
-                    });
-            }
-        }
-
-
-        public IList<RamMetric> GetAll()
-        {
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                return connection.Query<RamMetric>("SELECT * from rammetrics").ToList();
-            }
-        }
-
-
-        public RamMetric GetById(int id)
-        {
-            using (var connection = new SQLiteConnection(ConnectionString))
-            {
-                return connection.QuerySingle<RamMetric>("SELECT * FROM rammetrics WHERE id=@id",
-                    new { id = id });
+                using (var connection = new SQLiteConnection(_connectionString))
+                {
+                    connection.Execute("INSERT INTO rammetrics (value, time) VALUES (@value, @time)",
+                        new
+                        {
+                            value = item.Value,
+                            time = item.Time
+                        });
+                };
             }
         }
 
 
         public IList<RamMetric> GetByTimePeriod(TimeSpan fromTime, TimeSpan toTime)
         {
-            using (var connection = new SQLiteConnection(ConnectionString))
+            if (_connectionString != null)
             {
-                return connection.Query<RamMetric>("SELECT * FROM rammetrics WHERE time BETWEEN @fromTime AND @toTime",
-                    new
-                    {
-                        fromTime = fromTime,
-                        toTime = toTime
-                    }).ToList();
+                using (var connection = new SQLiteConnection(_connectionString))
+                {
+                    return connection.Query<RamMetric>("SELECT * FROM rammetrics WHERE time BETWEEN @fromTime AND @toTime",
+                        new
+                        {
+                            fromTime = fromTime.TotalSeconds,
+                            toTime = toTime.TotalSeconds
+                        }).ToList();
+                }
             }
+
+            return null;
         }                
     }
 }

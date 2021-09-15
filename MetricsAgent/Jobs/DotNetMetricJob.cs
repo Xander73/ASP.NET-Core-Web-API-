@@ -2,8 +2,6 @@
 using MetricsAgent.Models;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MetricsAgent.Jobs
@@ -24,7 +22,7 @@ namespace MetricsAgent.Jobs
 
             var value = Convert.ToInt32(GC.GetAllocatedBytesForCurrentThread());
 
-            _repository.Create(new DotNetMetric { Value = value, Time = time });
+            _repository.Create(new DotNetMetric { Value = value, Time = time.TotalSeconds });
 
             return Task.CompletedTask;
         }

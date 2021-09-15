@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using MetricsAgent.DAL;
 using MetricsAgent.Models;
@@ -34,7 +32,7 @@ namespace MetricsAgent.Jobs
 
             var value = Convert.ToInt32(performanceCounterSent.NextValue());
 
-            _repository.Create(new NetworkMetric { Time = time, Value = value });
+            _repository.Create(new NetworkMetric { Time = time.TotalSeconds, Value = value });
 
             return Task.CompletedTask;
         }

@@ -2,6 +2,8 @@
 using MetricsAgent.Models;
 using Moq;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace MetricsAgent.Tests
@@ -18,38 +20,6 @@ namespace MetricsAgent.Tests
 
         [Fact]
         public void Create_ShouldCall_Create()
-        {
-            mock.Setup(repository => repository.Create(It.IsAny<NetworkMetric>())).Verifiable();
-            mock.Verify(repository => repository.Create(It.IsAny<NetworkMetric>()), Times.AtMostOnce());
-        }
-
-
-        [Fact]
-        public void Delete_ShouldCall_Create()
-        {
-            mock.Setup(repository => repository.Delete(It.IsAny<int>())).Verifiable();
-            mock.Verify(repository => repository.Delete(It.IsAny<int>()), Times.AtMostOnce());
-        }
-
-
-        [Fact]
-        public void Update_ShouldCall_Create()
-        {
-            mock.Setup(repository => repository.Update(It.IsAny<NetworkMetric>())).Verifiable();
-            mock.Verify(repository => repository.Update(It.IsAny<NetworkMetric>()), Times.AtMostOnce());
-        }
-
-
-        [Fact]
-        public void GetAll_ShouldCall_Create()
-        {
-            mock.Setup(repository => repository.GetAll());
-            mock.Verify(repository => repository.GetAll(), Times.AtMostOnce());
-        }
-
-
-        [Fact]
-        public void GetById_ShouldCall_Create()
         {
             mock.Setup(repository => repository.Create(It.IsAny<NetworkMetric>())).Verifiable();
             mock.Verify(repository => repository.Create(It.IsAny<NetworkMetric>()), Times.AtMostOnce());

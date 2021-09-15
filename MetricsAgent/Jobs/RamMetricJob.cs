@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using MetricsAgent.DAL;
 using MetricsAgent.Models;
@@ -27,7 +25,7 @@ namespace MetricsAgent.Jobs
 
             var value = Convert.ToInt32(_ramCounter.NextValue());
 
-            _repository.Create(new RamMetric { Time = time, Value = value });
+            _repository.Create(new RamMetric { Time = time.TotalSeconds, Value = value });
 
             return Task.CompletedTask;
         }

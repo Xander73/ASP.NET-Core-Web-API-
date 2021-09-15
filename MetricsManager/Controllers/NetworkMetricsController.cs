@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using MetricsManager.DAL;
+using MetricsManager.Models;
+using MetricsManager.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsManager.Controllers
 {
@@ -13,27 +15,53 @@ namespace MetricsManager.Controllers
     public class NetworkMetricsController : ControllerBase
     {
         private ILogger<NetworkMetricsController> _logger;
+        private INetworkMetricsRepository _repository;
+        private IMapper _mapper;
 
-        public NetworkMetricsController(ILogger<NetworkMetricsController> loger)
+        public NetworkMetricsController(
+            ILogger<NetworkMetricsController> loger, 
+            INetworkMetricsRepository repository,
+            IMapper mapper
+            )
         {
             _logger = loger;
             _logger.LogDebug(1, "NLog встроен в NetworkMetricsController");
+
+            _repository = repository;
+            _mapper = mapper;
         }
 
 
-        [HttpGet("agent/{agentId}/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetricsFromAgent([FromRoute] int agentId, [FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
+        [HttpGet("from/{fromTime}/to/{toTime}")]
+        public IActionResult GetNetworkMetricsByTimePeriod(
+            [FromRoute] string fromTime, 
+            [FromRoute] string toTime
+            )
         {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetMetricsFromAgent с аргументами {agentId}, {fromTime} и {toTime}");
-            return Ok();
-        }
+            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetMetricsFromAgent с аргументами {fromTime} и {toTime}");
 
+            var response = new AllNetworkMetricsApiResponse()
+            {
+                Metrics = new List<NetworkMetricDto>()
+            };
 
-        [HttpGet("cluster/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetricsFromAllCluster ([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
-        {
-            _logger.LogInformation($"Вызван метод NetworkMetricsController.GetMetricsFromAllCluster с аргументами {fromTime} и {toTime}");
-            return Ok();
+            var metrics = (from metric in _repository
+                           .GetByTimePeriod(
+                           TimeSpan.FromSeconds(double.Parse(fromTime)),
+                           TimeSpan.FromSeconds(double.Parse(toTime))
+                          )
+                           select metric)
+                           .ToList<NetworkMetric>();
+
+            if (metrics != null)
+            {
+                foreach (var metric in metrics)
+                {
+                    response.Metrics.Add(_mapper.Map<NetworkMetricDto>(metric));
+                }
+            }
+
+            return Ok(response);
         }
     }
 }

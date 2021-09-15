@@ -4,6 +4,10 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Microsoft.Extensions.Logging;
+using MetricsManager.DAL;
+using MetricsManager.Models;
+using System.Collections.Generic;
+using AutoMapper;
 
 namespace Lesson2.Tests
 {
@@ -11,39 +15,29 @@ namespace Lesson2.Tests
     {
         private DotNetMetricsController controller;
         private Mock<ILogger<DotNetMetricsController>> mock;
+        private Mock<IDotNetMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public DotNetMetricsControllerTests ()
         {
             mock = new Mock<ILogger<DotNetMetricsController>>();
-            controller = new DotNetMetricsController(mock.Object);
+            repositoryMock = new Mock<IDotNetMetricsRepository>();
+            mapperMock = new Mock<IMapper>();
+            controller = new DotNetMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
-        public void DotNetMetricsController_OkReturned()
+        public void GetDotNetMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
+            var toTime = "100";
 
-            var toTime = TimeSpan.FromSeconds(100);
+            repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Returns(new List<DotNetMetric> { new DotNetMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
-
-
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-        [Fact]
-        public void GetMetricsFromAllCluster_OkReturned()
-        {
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
-
-
-            var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
+            var result = controller.GetDotNetMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

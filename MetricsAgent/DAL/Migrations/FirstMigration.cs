@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentMigrator;
+﻿using FluentMigrator;
 
 namespace MetricsAgent.DAL.Migrations
 {
@@ -31,7 +27,7 @@ namespace MetricsAgent.DAL.Migrations
             Create.Table("cpumetrics")
                 .WithColumn("Id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("Value").AsInt32()
-                .WithColumn("Time").AsInt64();
+                .WithColumn("Time").AsDouble();
 
 
             Create.Table("dotnetmetrics")

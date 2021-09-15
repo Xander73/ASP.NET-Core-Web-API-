@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MetricsAgent.Responses
 {
@@ -13,7 +10,7 @@ namespace MetricsAgent.Responses
 
     public class CpuMetricDto
     {
-        public TimeSpan Time { get; set; }
+        public double Time { get; set; }
 
         public int Value { get; set; }
 

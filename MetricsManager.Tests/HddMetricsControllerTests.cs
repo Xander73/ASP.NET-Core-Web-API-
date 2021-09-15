@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using MetricsManager.Controllers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using MetricsManager.DAL;
+using MetricsManager.Models;
+using System.Collections.Generic;
+using AutoMapper;
 
 namespace Lesson2.Tests
 {
@@ -11,39 +15,29 @@ namespace Lesson2.Tests
     {
         private HddMetricsController controller;
         private Mock<ILogger<HddMetricsController>> mock;
+        private Mock<IHddMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
         public HddMetricsControllerTests ()
         {
             mock = new Mock<ILogger<HddMetricsController>>();
-            controller = new HddMetricsController(mock.Object);
+            repositoryMock = new Mock<IHddMetricsRepository>();
+            mapperMock = new Mock<IMapper>();
+            controller = new HddMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
         }
 
 
         [Fact]
-        public void GetMetricFromAgent_OkReturned ()
+        public void GetHddMetricsByTimePeriod_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
+            var toTime = "100";
 
-            var toTime = TimeSpan.FromSeconds(100);
+            repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Returns(new List<HddMetric> { new HddMetric { Id = 1, AgentId = 1, Time = 1, Value = 1 } });
 
-
-            var result = controller.GetMetricFromAgent(agentId, fromTime, toTime);
-
-
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-        [Fact]
-        public void GetMetricsFromAllCluster_OkReturned()
-        {
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
-
-
-            var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
+            var result = controller.GetHddMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);

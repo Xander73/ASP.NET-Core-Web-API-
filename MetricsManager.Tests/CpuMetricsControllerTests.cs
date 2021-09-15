@@ -4,48 +4,44 @@ using System;
 using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
+using MetricsManager.DAL;
+using MetricsManager.Models;
+using System.Collections.Generic;
+using AutoMapper;
 
 namespace Lesson2.Tests
 {
     public class CpuMetricsControllerTests
     {
-        private CPUMetricsController controller;
-        private Mock<ILogger<CPUMetricsController>> mock;
+        private CpuMetricsController controller;
+        private Mock<ILogger<CpuMetricsController>> mock;
+        private Mock<ICpuMetricsRepository> repositoryMock;
+        private Mock<IMapper> mapperMock;
 
 
         public CpuMetricsControllerTests ()
         {
-            mock = new Mock<ILogger<CPUMetricsController>>();
-            controller = new CPUMetricsController(mock.Object);
+            mock = new Mock<ILogger<CpuMetricsController>>();
+            repositoryMock = new Mock<ICpuMetricsRepository>();
+            mapperMock = new Mock<IMapper>();
+
+            controller = new CpuMetricsController(mock.Object, repositoryMock.Object, mapperMock.Object);
+
         }
 
 
         [Fact]
         public void GetMetricsFromAgent_OkReturned()
         {
-            var agentId = 1;
+            var fromTime = "0";
 
-            var fromTime = TimeSpan.FromSeconds(0);
+            var toTime = "100";
 
-            var toTime = TimeSpan.FromSeconds(100);
-
-
-            var result = controller.GetMetricsFromAgent(agentId, fromTime, toTime);
+            repositoryMock.Setup(repository => repository.GetByTimePeriod(It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+                .Returns(new List<CpuMetric> { new CpuMetric { Id =1, AgentId = 1, Time = 1, Value = 1 } });
 
 
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-
-        [Fact]
-        public void GetMetricsFromAllCluster_OkReturned()
-        {
-            var fromTime = TimeSpan.FromSeconds(0);
-
-            var toTime = TimeSpan.FromSeconds(100);
-
-
-            var result = controller.GetMetricsFromAllCluster(fromTime, toTime);
+            var result = controller.GetCpuMetricsByTimePeriod(fromTime, toTime);
 
 
             Assert.IsAssignableFrom<IActionResult>(result);
