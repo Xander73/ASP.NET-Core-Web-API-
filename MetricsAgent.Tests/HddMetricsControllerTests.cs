@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using MetricsAgent.DAL;
 using System;
-using AutoMapper;
 using MetricsAgent.Requests;
+using AutoMapper;
 
 namespace MetricsAgent.Tests
 {
@@ -29,41 +29,12 @@ namespace MetricsAgent.Tests
         [Fact]
         public void GetByTimePeriod_OkReturned()
         {
-            TimeSpan fromTime = TimeSpan.FromSeconds(1600000000);
+            var fromTime = "1600000000";
 
-            TimeSpan toTime = TimeSpan.FromSeconds(1630000000);
+            var toTime = "1650000000";
 
             var result = controller.GetByTimePeriod(fromTime, toTime);
 
-
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-
-        [Fact]
-        public void GetGetLeftMemoryMegabyte_OkReturned()
-        {
-            var result = controller.GetLeftMemoryMegabyte();
-
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-
-        [Fact]
-        public void Create_OkReturned()
-        {
-            var request = new HddMetricCreateRequest();
-
-            var result = controller.Create(request);
-
-            Assert.IsAssignableFrom<IActionResult>(result);
-        }
-
-
-        [Fact]
-        public void GetAll_OkReturned()
-        {
-            var result = controller.GetAll();
 
             Assert.IsAssignableFrom<IActionResult>(result);
         }

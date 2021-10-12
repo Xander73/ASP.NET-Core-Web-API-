@@ -1,12 +1,9 @@
 ﻿using MetricsAgent.DAL;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using MetricsAgent.Models;
-using System.Diagnostics;
 
 namespace MetricsAgent.Jobs
 {
@@ -22,10 +19,6 @@ namespace MetricsAgent.Jobs
 
         public Task Execute(IJobExecutionContext context)
         {
-            //PerformanceCounter _counter = new PerformanceCounter("HDD", "Free Megabytes");
-
-            //var value = Convert.ToInt32(_counter.NextValue());
-
             DriveInfo driveInfo = new DriveInfo("C");
             int value = 0;
             if (driveInfo.IsReady)
@@ -35,7 +28,7 @@ namespace MetricsAgent.Jobs
 
             var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-            _repository.Create(new HddMetric { Value = value, Time = time });
+            _repository.Create(new HddMetric { Value = value, Time = time.TotalSeconds });
 
             return Task.CompletedTask;
         }

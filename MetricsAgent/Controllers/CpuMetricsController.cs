@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using MetricsAgent.DAL;
-using MetricsAgent.Models;
-using MetricsAgent.Requests;
 using MetricsAgent.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,7 +8,7 @@ using System.Collections.Generic;
 
 namespace MetricsAgent.Controllers
 {
-    [Route("api/metrics/cpu")]
+    [Route("api/cpumetrics")]
     [ApiController]
     public class CpuMetricsController : ControllerBase
     {
@@ -31,56 +29,15 @@ namespace MetricsAgent.Controllers
             _mapper = mapper;
         }
 
-                
-        [HttpGet("metricsController/from/{fromTime}/to/{toTime}")]
-        public IActionResult GetMetrics([FromRoute] TimeSpan fromTime, [FromRoute] TimeSpan toTime)
+
+        [HttpGet("from/{fromParameter}/to/{toParameter}")]
+        public IActionResult GetByTimePeriod([FromRoute]string fromParameter, [FromRoute]string toParameter)
         {
-            _logger.LogInformation($"Вызван метод CpuMetricsController.GetMetrics с аргументами {fromTime} и {toTime}");
-            return Ok();
-        }
-        
+            _logger.LogInformation($"Запущен метод CpuMetricsController.GetByTimePeriod с параметрами {fromParameter} и {toParameter}");
+            //обратно привожу строки к double
+            TimeSpan fromTime = TimeSpan.FromSeconds(Convert.ToDouble(fromParameter));
+            TimeSpan toTime = TimeSpan.FromSeconds(Convert.ToDouble(toParameter));
 
-        [HttpPost("create")]
-        public IActionResult Create([FromBody] CpuMetricCreateRequest request)
-        {
-            _logger.LogInformation($"Вызван метод CpuMetricsController.Create с аргументом {request}.");
-            _repository.Create(new CpuMetric
-            {
-                Time = request.Time,
-                Value = request.Value
-            });
-
-            return Ok();
-        }
-
-
-        [HttpGet("all")]
-        public IActionResult GetAll()
-         {
-            _logger.LogInformation("Вызван метод CpuMetricsController.GetAll без аргументов.");
-            var metrics = _repository.GetAll();
-
-            var response = new AllCpuMetricsResponse()
-            {
-                Metrics = new List<CpuMetricDto>()
-            };
-
-            if (metrics != null)
-            {
-                foreach (var metric in metrics)
-                {
-                    response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
-                }
-            }
-            
-            return Ok(response);
-        }
-
-
-        [HttpGet("period")]
-        public IActionResult GetByTimePeriod(TimeSpan fromTime, TimeSpan toTime)
-        {
-            _logger.LogInformation($"Вызван метод CpuMetricsController.GetByTimePeriod с аргументами {fromTime} и {toTime}"); ; ;
             var metrics = _repository.GetByTimePeriod(fromTime, toTime);
 
             var response = new AllCpuMetricsResponse()
@@ -95,6 +52,7 @@ namespace MetricsAgent.Controllers
                     response.Metrics.Add(_mapper.Map<CpuMetricDto>(metric));
                 }
             }
+
             return Ok(response);
         }
     }

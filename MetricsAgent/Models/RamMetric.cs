@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 
 namespace MetricsAgent.Models
 {
@@ -11,6 +8,6 @@ namespace MetricsAgent.Models
 
         public int Value { get; set; }
 
-        public TimeSpan Time { get; set; }
+        public double Time { get; set; }
     }
 }

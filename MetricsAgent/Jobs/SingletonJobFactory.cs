@@ -1,9 +1,6 @@
 ﻿using Quartz.Spi;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MetricsAgent.Jobs
@@ -12,7 +9,7 @@ namespace MetricsAgent.Jobs
     {
         private readonly IServiceProvider _servicePprovider;
 
-        public SingletonJobFactory (IServiceProvider servicePprovider)
+        public SingletonJobFactory(IServiceProvider servicePprovider)
         {
             _servicePprovider = servicePprovider;
         }

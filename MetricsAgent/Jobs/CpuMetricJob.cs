@@ -1,6 +1,5 @@
 ﻿using MetricsAgent.DAL;
 using MetricsAgent.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using System;
 using System.Diagnostics;
@@ -13,6 +12,7 @@ namespace MetricsAgent.Jobs
     {
         private ICpuMetricsRepository _repository;
         private PerformanceCounter _cpuCounter;
+
         public CpuMetricJob(ICpuMetricsRepository repository)
         {
             _repository = repository;
@@ -26,7 +26,8 @@ namespace MetricsAgent.Jobs
 
             var time = TimeSpan.FromSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-            _repository.Create(new CpuMetric { Time = time, Value = cpuUsageInPercents });
+            _repository.Create(new CpuMetric { Time = time.TotalSeconds, Value = cpuUsageInPercents });
+
             return Task.CompletedTask;
         }
     }

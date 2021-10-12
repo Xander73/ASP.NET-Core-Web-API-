@@ -1,13 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MetricsAgent
 {
@@ -15,13 +10,10 @@ namespace MetricsAgent
     {
         public static void Main(string[] args)
         {
-
-            var list = PerformanceCounterCategory.GetCategories();
-
             var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                logger.Debug("init main");
+                logger.Debug("init main Agent");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception exception)
@@ -35,6 +27,7 @@ namespace MetricsAgent
 
             }
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args).ConfigureWebHostDefaults(webBuilder =>

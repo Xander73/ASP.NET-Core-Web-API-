@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Spi;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,7 +14,7 @@ namespace MetricsAgent.Jobs
         private readonly IJobFactory _jobFactory;
         private readonly IEnumerable<JobSchedule> _jobSchedules;
 
-        public QuartzHostedService (
+        public QuartzHostedService(
             ICpuMetricsRepository repository,
             ISchedulerFactory schedulerFactory,
             IJobFactory jobFactory,
